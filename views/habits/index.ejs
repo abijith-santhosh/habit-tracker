@@ -1,0 +1,48 @@
+<%- include('../partials/header') %>
+<h1>My Habits</h1>
+<a href="/habits/add" class="btn">Add New Habit</a>
+<ul>
+  <% habits.forEach(habit => { %>
+    <li class="habit-item">
+      <div class="habit-info">
+        <span><%= habit.name %></span>
+        <div class="stats">
+          <span>Completed: <%= habit.completedDays %> days</span> | 
+          <span>Longest Streak: <%= habit.longestStreak %> days</span>
+        </div>
+        <div class="actions">
+          <button onclick="toggleDates('<%= habit._id %>')">Show/Hide Dates</button>
+          <form action="/habits/delete/<%= habit._id %>" method="POST" style="display:inline;">
+            <button type="submit" class="delete">Delete</button>
+          </form>
+        </div>
+      </div>
+      <ul id="dates-<%= habit._id %>" style="display:none;">
+        <% 
+        const today = new Date();
+        const daysOfWeek = [];
+        for (let i = 6; i >= 0; i--) {
+          const day = new Date(today);
+          day.setDate(today.getDate() - i);
+          daysOfWeek.push(day.toISOString().slice(0, 10));
+        }
+        daysOfWeek.forEach(day => { 
+          const dayStatus = habit.dates.find(d => d.date === day)?.status || 'None';
+        %>
+          <li>
+            <form action="/habits/update/<%= habit._id %>" method="POST">
+              <input type="hidden" name="date" value="<%= day %>">
+              <label for="status-<%= day %>"><%= day %>:</label>
+              <select name="status" id="status-<%= day %>" onchange="this.form.submit()">
+                <option value="None" <%= dayStatus === 'None' ? 'selected' : '' %>>None</option>
+                <option value="Done" <%= dayStatus === 'Done' ? 'selected' : '' %>>Done</option>
+                <option value="Not done" <%= dayStatus === 'Not done' ? 'selected' : '' %>>Not done</option>
+              </select>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+    </li>
+  <% }) %>
+</ul>
+<%- include('../partials/footer') %>

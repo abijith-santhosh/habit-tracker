@@ -1,0 +1,8 @@
+<%- include('../partials/header') %>
+<h1>Add New Habit</h1>
+<form action="/habits" method="POST">
+  <label for="name">Habit Name:</label>
+  <input type="text" id="name" name="name" required>
+  <button type="submit">Add Habit</button>
+</form>
+<%- include('../partials/footer') %>

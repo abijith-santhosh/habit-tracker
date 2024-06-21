@@ -1,0 +1,30 @@
+<%- include('../partials/header') %>
+<h1><%= habit.name %></h1>
+<h2>Habit details for the past 7 days</h2>
+<ul>
+  <% 
+  const today = new Date();
+  const daysOfWeek = [];
+  for (let i = 6; i >= 0; i--) {
+    const day = new Date(today);
+    day.setDate(today.getDate() - i);
+    daysOfWeek.push(day.toISOString().slice(0, 10));
+  }
+  daysOfWeek.forEach(day => { 
+    const dayStatus = habit.dates.find(d => d.date === day)?.status || 'None';
+  %>
+    <li>
+      <form action="/habits/update/<%= habit._id %>" method="POST">
+        <input type="hidden" name="date" value="<%= day %>">
+        <label for="status-<%= day %>"><%= day %>:</label>
+        <select name="status" id="status-<%= day %>" onchange="this.form.submit()">
+          <option value="None" <%= dayStatus === 'None' ? 'selected' : '' %>>None</option>
+          <option value="Done" <%= dayStatus === 'Done' ? 'selected' : '' %>>Done</option>
+          <option value="Not done" <%= dayStatus === 'Not done' ? 'selected' : '' %>>Not done</option>
+        </select>
+      </form>
+    </li>
+  <% }) %>
+</ul>
+<a href="/habits">Back to Habits</a>
+<%- include('../partials/footer') %>
